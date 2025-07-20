@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能肺部结节分析系统</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #6FB1FC;
+            --background-color: #f0f2f5;
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --text-light-color: #666;
+            --border-color: #e8e8e8;
+            --success-color: #52c41a;
+            --error-color: #f5222d;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg-color);
+            padding: 2em 3em;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 0.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-light-color);
+            margin-bottom: 2em;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2em;
+            text-align: center;
+            margin-bottom: 1.5em;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f5f8ff;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin: 0.5em 0;
+        }
+
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: var(--card-bg-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-wrapper:hover .file-input-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .file-name {
+            color: var(--text-light-color);
+            font-style: italic;
+            margin-left: 10px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: 700;0
+            color: white;
+            background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 82, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 82, 212, 0.4);
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5em;
+            margin-top: 2em;
+            color: var(--primary-color);
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            height: 300px;
+            margin-top: 1em;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            background-color: #fdfdfd;
+            resize: vertical;
+        }
+
+        .flash { padding: 1em; margin-bottom: 1em; border-radius: 8px; text-align: center; font-weight: 500;}
+        .flash.error { background: #fff1f0; border: 1px solid #ffa39e; color: var(--error-color); }
+        .flash.success { background: #f6ffed; border: 1px solid #b7eb8f; color: var(--success-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🩺 智能结节分析系统</h1>
+        <p class="subtitle">基于深度学习的精准医疗辅助诊断</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="upload-area">
+                <div class="file-input-wrapper">
+                    <button type="button" class="file-input-button">选择 .mhd 文件</button>
+                    <input type="file" name="mhd_file" id="mhd_file" accept=".mhd" onchange="updateFileName(this, 'mhd-file-name')" required>
+                </div>
+                <span class="file-name" id="mhd-file-name">未选择文件</span>
+            </div>
+            <div class="upload-area">
+                <div class="file-input-wrapper">
+                    <button type="button" class="file-input-button">选择 .raw 文件</button>
+                    <input type="file" name="raw_file" id="raw_file" accept=".raw" onchange="updateFileName(this, 'raw-file-name')" required>
+                </div>
+                <span class="file-name" id="raw-file-name">未选择文件</span>
+            </div>
+            <button type="submit" class="submit-button">🚀 开始分析</button>
+        </form>
+
+        <h2>📊 分析报告</h2>
+        <textarea readonly>{{ analysis_result if analysis_result else "分析结果将在此处显示..." }}</textarea>
+    </div>
+
+    <script>
+        function updateFileName(input, spanId) {
+            const fileNameSpan = document.getElementById(spanId);
+            if (input.files.length > 0) {
+                fileNameSpan.textContent = input.files[0].name;
+            } else {
+                fileNameSpan.textContent = "未选择文件";
+            }
+        }
+    </script>
+</body>
+</html>
